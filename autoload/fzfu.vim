@@ -17,7 +17,7 @@ function fzfu#GetCachedNamesList()
     return names_list
 endfunction
 
-function! fzfu#FzfUnicode()
+function! fzfu#Select()
     let names_list = fzfu#GetCachedNamesList()
     let lines = fzf#run({'source': "awk 'BEGIN{FS=\"\\t\"}
                        \                 /^[0-9A-F]+/{chr=strtonum(\"0x\" $1); printf(\"%08x — U+%04X — %s\\n\", chr, chr, $2)}
@@ -30,6 +30,17 @@ function! fzfu#FzfUnicode()
                        \             '--multi',
                        \             '--bind', 'tab:toggle',
                        \             '--bind', 'btab:toggle']})
+    return lines
+endfunction
+
+function! fzfu#FzfUnicode()
+    let lines = fzfu#Select()
     let codepoints =  map(copy(lines), {i, line -> eval(printf('"\U%08X"', str2nr(split(line)[0], 16)))})
     return join(codepoints, '')
+endfunction
+
+function! fzfu#FzfUnicodeName()
+    let lines = fzfu#Select()
+    let names = map(copy(lines), {i, line -> join(split(line, ' — ')[1:], ' ')})
+    return join(names, "\n")
 endfunction
