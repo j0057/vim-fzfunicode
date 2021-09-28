@@ -33,7 +33,7 @@ function! fzfu#Select()
     return lines
 endfunction
 
-function! fzfu#FzfUnicode()
+function! fzfu#FzfUnicodeChar()
     let lines = fzfu#Select()
     let codepoints =  map(copy(lines), {i, line -> eval(printf('"\U%08X"', str2nr(split(line)[0], 16)))})
     return join(codepoints, '')
